@@ -1,0 +1,22 @@
+curl -X POST -d "postnum=1&sensor=LDR&status=90%" http://localhost/post-sensordata-one.php
+
+curl -X POST -d "postnum=1&location=Brgy. Bagumbuhay&sensor=LDR&status=90%" http://localhost/post-sensordata-full.php
+
+curl -X POST -d "statusforpostnum1=100&statusforpostnum2=200&statusforpostnum3=300&statusforpostnum4=400&statusforpostnum5=500" http://mergelink.000webhostapp.com/post-sensordata-all.php
+
+
+http://mergelink.000webhostapp.com/post-sensordata-all.php
+statusforpostnum1=100
+statusforpostnum2=200
+statusforpostnum3=300
+statusforpostnum4=400
+statusforpostnum5=500
+
+statusforpostnum1=ON
+statusforpostnum2=OFF
+statusforpostnum3=ON
+statusforpostnum4=OFF
+statusforpostnum5=ON
+
+curl -X POST -d "statusforpostnum1=ON&statusforpostnum2=OFF&statusforpostnum3=ON&statusforpostnum4=OFF&statusforpostnum5=ON" http://mergelink.000webhostapp.com/post-sensordata-all.php
+
