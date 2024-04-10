@@ -1,0 +1,10 @@
+./mysql -u root -p
+
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
+
+CREATE DATABASE dbtest;
+
+FLUSH PRIVILEGES;
+
+exit
