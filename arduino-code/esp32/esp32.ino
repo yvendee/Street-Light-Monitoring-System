@@ -1,17 +1,21 @@
 #include <WiFi.h>
-#include <HTTPClient.h>
+#include <WiFiClient.h>
 
 #define NUM_LEDS 5
-#define LDRPIN 13
 #define LEDPIN_1 15
 #define LEDPIN_2 16
 #define LEDPIN_3 17
 #define LEDPIN_4 18
 #define LEDPIN_5 19
+#define LDRPIN_1 34
+#define LDRPIN_2 35
+#define LDRPIN_3 36
+#define LDRPIN_4 39
+#define LDRPIN_5 32
 
 const char* ssid = "your_wifi_ssid";
 const char* password = "your_wifi_password";
-const char* serverAddress = "mergelink.000webhostapp.com";
+const char* serverAddress = "streetlightmonitoring2024.000webhostapp.com/";
 const int serverPort = 80;
 const char* endpoint = "/post-sensordata-all.php";
 
@@ -22,6 +26,8 @@ enum LEDStatus {
 
 LEDStatus ledStatus[NUM_LEDS] = {OFF, OFF, OFF, OFF, OFF};
 
+WiFiClient client;
+
 void setup() {
   Serial.begin(115200);
   pinMode(LEDPIN_1, OUTPUT);
@@ -29,29 +35,44 @@ void setup() {
   pinMode(LEDPIN_3, OUTPUT);
   pinMode(LEDPIN_4, OUTPUT);
   pinMode(LEDPIN_5, OUTPUT);
-  pinMode(LDRPIN, INPUT);
+  pinMode(LDRPIN_1, INPUT);
+  pinMode(LDRPIN_2, INPUT);
+  pinMode(LDRPIN_3, INPUT);
+  pinMode(LDRPIN_4, INPUT);
+  pinMode(LDRPIN_5, INPUT);
   delay(1000);
   connectToWiFi();
 }
 
 void loop() {
-  int sensorValue = analogRead(LDRPIN);
-  Serial.print("LDR Value: ");
-  Serial.println(sensorValue);
+  // Read sensor values
+  int sensorValue1 = analogRead(LDRPIN_1);
+  int sensorValue2 = analogRead(LDRPIN_2);
+  int sensorValue3 = analogRead(LDRPIN_3);
+  int sensorValue4 = analogRead(LDRPIN_4);
+  int sensorValue5 = analogRead(LDRPIN_5);
 
-  if (sensorValue > 500) {
-    for (int i = 0; i < NUM_LEDS; i++) {
-      ledStatus[i] = ON;
-    }
-    Serial.println("Low light detected. LEDs turned on.");
-  } else {
-    for (int i = 0; i < NUM_LEDS; i++) {
-      ledStatus[i] = OFF;
-    }
-    Serial.println("Sunlight detected. LEDs turned off.");
-  }
+  // Set LED status based on sensor values
+  ledStatus[0] = (sensorValue1 > 500) ? ON : OFF;
+  ledStatus[1] = (sensorValue2 > 500) ? ON : OFF;
+  ledStatus[2] = (sensorValue3 > 500) ? ON : OFF;
+  ledStatus[3] = (sensorValue4 > 500) ? ON : OFF;
+  ledStatus[4] = (sensorValue5 > 500) ? ON : OFF;
 
-  sendSensorData(ledStatus);
+  // Print sensor values
+  Serial.print("LDR Value 1: ");
+  Serial.println(sensorValue1);
+  Serial.print("LDR Value 2: ");
+  Serial.println(sensorValue2);
+  Serial.print("LDR Value 3: ");
+  Serial.println(sensorValue3);
+  Serial.print("LDR Value 4: ");
+  Serial.println(sensorValue4);
+  Serial.print("LDR Value 5: ");
+  Serial.println(sensorValue5);
+
+  // Send sensor data to the server
+  sendSensorData(ledStatus, sensorValue1, sensorValue2, sensorValue3, sensorValue4, sensorValue5);
 
   delay(5000); // Adjust delay as needed
 }
@@ -68,33 +89,41 @@ void connectToWiFi() {
   Serial.println("WiFi connected");
 }
 
-void sendSensorData(LEDStatus statuses[]) {
-  HTTPClient http;
+void sendSensorData(LEDStatus statuses[], int sensorValue1, int sensorValue2, int sensorValue3, int sensorValue4, int sensorValue5) {
+  if (!client.connect(serverAddress, serverPort)) {
+    Serial.println("Connection failed.");
+    delay(5000);
+    return;
+  }
 
   // Prepare data
   String postData = "statusforpostnum1=" + String(statuses[0] == ON ? "ON" : "OFF") +
                     "&statusforpostnum2=" + String(statuses[1] == ON ? "ON" : "OFF") +
                     "&statusforpostnum3=" + String(statuses[2] == ON ? "ON" : "OFF") +
                     "&statusforpostnum4=" + String(statuses[3] == ON ? "ON" : "OFF") +
-                    "&statusforpostnum5=" + String(statuses[4] == ON ? "ON" : "OFF");
+                    "&statusforpostnum5=" + String(statuses[4] == ON ? "ON" : "OFF") +
+                    "&ldrValue1=" + String(sensorValue1) +
+                    "&ldrValue2=" + String(sensorValue2) +
+                    "&ldrValue3=" + String(sensorValue3) +
+                    "&ldrValue4=" + String(sensorValue4) +
+                    "&ldrValue5=" + String(sensorValue5);
 
   Serial.println("Sending data...");
   Serial.println(postData);
 
   // Send POST request
-  http.begin(serverAddress, serverPort, endpoint);
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  int httpResponseCode = http.POST(postData);
+  client.print(String("POST ") + endpoint + " HTTP/1.1\r\n" +
+               "Host: " + serverAddress + "\r\n" +
+               "Content-Type: application/x-www-form-urlencoded\r\n" +
+               "Content-Length: " + postData.length() + "\r\n" +
+               "Connection: close\r\n" +
+               "\r\n" + postData);
 
-  if (httpResponseCode > 0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    String response = http.getString();
-    Serial.println(response);
-  } else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
+  delay(10);
+
+  while (client.available()) {
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
   }
-
-  http.end();
+  client.stop();
 }
