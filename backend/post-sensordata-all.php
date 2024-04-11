@@ -16,11 +16,11 @@
     // Check if POST data exists
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Extract POST data for each postnum
-        $ldrValue1 = $_POST["ldrValue1"];
-        $ldrValue2 = $_POST["ldrValue2"];
-        $ldrValue3 = $_POST["ldrValue3"];
-        $ldrValue4 = $_POST["ldrValue4"];
-        $ldrValue5 = $_POST["ldrValue5"];
+        $ldrValue1 = $_POST["Sensor1"];
+        $ldrValue2 = $_POST["Sensor2"];
+        $ldrValue3 = $_POST["Sensor3"];
+        $ldrValue4 = $_POST["Sensor4"];
+        $ldrValue5 = $_POST["Sensor5"];
 
         $statusforpostnum1 = $_POST["statusforpostnum1"];
         $statusforpostnum2 = $_POST["statusforpostnum2"];
@@ -33,22 +33,22 @@
 
         // Prepare an array to store the update status data for each postnum
         $updateData = array(
-            array("postnum" => "1", "ldrValue" => $ldrValue1, "status" => $statusforpostnum1),
-            array("postnum" => "2", "ldrValue" => $ldrValue2, "status" => $statusforpostnum2),
-            array("postnum" => "3", "ldrValue" => $ldrValue3, "status" => $statusforpostnum3),
-            array("postnum" => "4", "ldrValue" => $ldrValue4, "status" => $statusforpostnum4),
-            array("postnum" => "5", "ldrValue" => $ldrValue5, "status" => $statusforpostnum5)
+            array("postnum" => "1", "Sensor" => $ldrValue1, "status" => $statusforpostnum1),
+            array("postnum" => "2", "Sensor" => $ldrValue2, "status" => $statusforpostnum2),
+            array("postnum" => "3", "Sensor" => $ldrValue3, "status" => $statusforpostnum3),
+            array("postnum" => "4", "Sensor" => $ldrValue4, "status" => $statusforpostnum4),
+            array("postnum" => "5", "Sensor" => $ldrValue5, "status" => $statusforpostnum5)
         );
 
         // Execute update query for each postnum
         foreach ($updateData as $data) {
             $postnum = $data["postnum"];
-            $ldrValue = $data["ldrValue"];
+            $ldrValue = $data["Sensor"];
             $status = $data["status"];
 
             // SQL to update sensor and status data based on postnum
             $sql_update_data = "UPDATE sensordata 
-                                SET LDR$ldrValue = '$ldrValue', Status$ldrValue = '$status', ReadingTime = '$currentDateTime' 
+                                SET Sensor = '$ldrValue', Status = '$status', ReadingTime = '$currentDateTime' 
                                 WHERE PostNum = '$postnum'";
 
             // Execute SQL query to update sensor and status data
