@@ -15,7 +15,7 @@
 
 const char* ssid = "your_wifi_ssid";
 const char* password = "your_wifi_password";
-const char* serverAddress = "streetlightmonitoring2024.000webhostapp.com/";
+const char* serverAddress = "streetlightmonitoring2024.000webhostapp.com";
 const int serverPort = 80;
 const char* endpoint = "/post-sensordata-all.php";
 
@@ -102,11 +102,11 @@ void sendSensorData(LEDStatus statuses[], int sensorValue1, int sensorValue2, in
                     "&statusforpostnum3=" + String(statuses[2] == ON ? "ON" : "OFF") +
                     "&statusforpostnum4=" + String(statuses[3] == ON ? "ON" : "OFF") +
                     "&statusforpostnum5=" + String(statuses[4] == ON ? "ON" : "OFF") +
-                    "&ldrValue1=" + String(sensorValue1) +
-                    "&ldrValue2=" + String(sensorValue2) +
-                    "&ldrValue3=" + String(sensorValue3) +
-                    "&ldrValue4=" + String(sensorValue4) +
-                    "&ldrValue5=" + String(sensorValue5);
+                    "&Sensor1=" + String(sensorValue1) +
+                    "&Sensor2=" + String(sensorValue2) +
+                    "&Sensor3=" + String(sensorValue3) +
+                    "&Sensor4=" + String(sensorValue4) +
+                    "&Sensor5=" + String(sensorValue5);
 
   Serial.println("Sending data...");
   Serial.println(postData);
