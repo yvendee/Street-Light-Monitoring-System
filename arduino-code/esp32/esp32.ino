@@ -52,13 +52,6 @@ void loop() {
   int sensorValue4 = analogRead(LDRPIN_4);
   int sensorValue5 = analogRead(LDRPIN_5);
 
-  // Set LED status based on sensor values
-  ledStatus[0] = (sensorValue1 > 500) ? ON : OFF;
-  ledStatus[1] = (sensorValue2 > 500) ? ON : OFF;
-  ledStatus[2] = (sensorValue3 > 500) ? ON : OFF;
-  ledStatus[3] = (sensorValue4 > 500) ? ON : OFF;
-  ledStatus[4] = (sensorValue5 > 500) ? ON : OFF;
-
   // Print sensor values
   Serial.print("LDR Value 1: ");
   Serial.println(sensorValue1);
@@ -71,57 +64,19 @@ void loop() {
   Serial.print("LDR Value 5: ");
   Serial.println(sensorValue5);
 
+  // Set LED status based on sensor values
+  digitalWrite(LEDPIN_1, (sensorValue1 > 500) ? HIGH : LOW);
+  digitalWrite(LEDPIN_2, (sensorValue2 > 500) ? HIGH : LOW);
+  digitalWrite(LEDPIN_3, (sensorValue3 > 500) ? HIGH : LOW);
+  digitalWrite(LEDPIN_4, (sensorValue4 > 500) ? HIGH : LOW);
+  digitalWrite(LEDPIN_5, (sensorValue5 > 500) ? HIGH : LOW);
+
   // Send sensor data to the server
   sendSensorData(ledStatus, sensorValue1, sensorValue2, sensorValue3, sensorValue4, sensorValue5);
 
-
-  if(sensorValue1 > 500){
-    digitalWrite(LEDPIN_1, HIGH);
-    Serial.println("Low light detected. LED1s turned on.");
-  }
-  else{
-    digitalWrite(LEDPIN_1, LOW);
-    Serial.println("Sunlight detected. LED1s turned off.");
-  }
-
-  if(sensorValue2 > 500){
-    digitalWrite(LEDPIN_2, HIGH);
-    Serial.println("Low light detected. LED2s turned on.");
-  }
-  else{
-    digitalWrite(LEDPIN_2, LOW);
-    Serial.println("Sunlight detected. LED2s turned off.");
-  }
-
-  if(sensorValue3 > 500){
-    digitalWrite(LEDPIN_3, HIGH);
-    Serial.println("Low light detected. LED3s turned on.");
-  }
-  else{
-    digitalWrite(LEDPIN_3, LOW);
-    Serial.println("Sunlight detected. LED3s turned off.");
-  }
-
-  if(sensorValue4 > 500){
-    digitalWrite(LEDPIN_4, HIGH);
-    Serial.println("Low light detected. LED4s turned on.");
-  }
-  else{
-    digitalWrite(LEDPIN_4, LOW);
-    Serial.println("Sunlight detected. LED4s turned off.");
-  }
-
-  if(sensorValue5 > 500){
-    digitalWrite(LEDPIN_5, HIGH);
-    Serial.println("Low light detected. LED5s turned on.");
-  }
-  else{
-    digitalWrite(LEDPIN_5, LOW);
-    Serial.println("Sunlight detected. LED5s turned off.");
-  }
-
   delay(5000); // Adjust delay as needed
 }
+
 
 void connectToWiFi() {
   Serial.print("Connecting to WiFi...");
@@ -172,4 +127,12 @@ void sendSensorData(LEDStatus statuses[], int sensorValue1, int sensorValue2, in
     Serial.print(line);
   }
   client.stop();
+}void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
 }
