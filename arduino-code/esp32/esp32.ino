@@ -127,12 +127,5 @@ void sendSensorData(LEDStatus statuses[], int sensorValue1, int sensorValue2, in
     Serial.print(line);
   }
   client.stop();
-}void setup() {
-  // put your setup code here, to run once:
-
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-
-}
